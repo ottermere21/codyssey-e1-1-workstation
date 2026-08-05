@@ -169,7 +169,7 @@ user.email=ottermere21@gmail.com
 | **`.`** | Current Directory | **현재 위치한 폴더**를 나타내는 경로 기호 <br>(예: `open .`, `./script.sh`) |
 | **`~`** | Home Directory | 로그인한 **사용자의 홈 폴더 경로**(`/Users/사용자명`)를 뜻하는 줄임표 <br> (예: `cd ~`) |
 
-### 4.1 터미널 기본 명령어 실습
+### 5.1 터미널 기본 명령어 실습
 ```
 # 1. 현재 위치 확인
 $ pwd
@@ -254,7 +254,7 @@ $ ls
 README.md
 ```
 
-### 4.2 권한 실습
+### 5.2 권한 실습
 | 구분 | 권한 기호 (`rwx`) | 8진수 숫자 | 파일에서의 의미 | 디렉토리에서의 의미 | 자주 쓰이는 조합 예시 |
 | :--- | :---: | :---: | :--- | :--- | :--- |
 | **Read (읽기)** | **`r`** | **4** | 파일 내용 조회 (`cat` 등) | 폴더 내부 파일 목록 확인 (`ls`) | • **`644`** (`rw-r--r--`): 일반 파일 기본값 |
@@ -336,6 +336,97 @@ Running
 # OrbStack의 가상머신이 잘 작동하고 있음
 
 ```
+### 5.2 Docker 기본 운영 명령 실습
+- docker images
+- docker ps (-a)
+- docker logs
+- docker stats
+
+hello-world 실습 이후의 내용입니다.
+
+```
+$ docker images
+REPOSITORY    TAG       IMAGE ID       CREATED        SIZE
+hello-world   latest    e2ac70e7319a   4 months ago   10.1kB
+
+$ docker ps 
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker ps -a
+CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
+87343a9c1ce5   hello-world   "/hello"   23 minutes ago   Exited (0) 23 minutes ago             sweet_bose
+
+
+
+``` 
+- ctrl + z: 실행 중인 프로그램을 일시 중지시킨 후, Background로 보냄
+- bg VS fg????
+- --no-stream: 실시간으로 반복 출력되는 스트리밍 화면을 끄고, 명령어를 실행한 현재 시점의 상태 한 번만 출력한 뒤 종료
+```
+# monitor-test 전
+$ docker stats --no-stream
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O   BLOCK I/O   PIDS
+
+# monitor-test 실행
+$ docker run -d --name monitor-test nginx
+358ebb33d8e0bedf3cc30a6effba4a938b4ef625bc175d376f042fdcfb15c553
+
+$ docker ps 
+CONTAINER ID   IMAGE     COMMAND                   CREATED         STATUS         PORTS     NAMES
+c3e26859c71b   nginx     "/docker-entrypoint.…"   3 seconds ago   Up 3 seconds   80/tcp    monitor-test
+
+$ docker ps -a
+CONTAINER ID   IMAGE         COMMAND                   CREATED          STATUS                      PORTS     NAMES
+c3e26859c71b   nginx         "/docker-entrypoint.…"   20 seconds ago   Up 19 seconds               80/tcp    monitor-test
+87343a9c1ce5   hello-world   "/hello"                  53 minutes ago   Exited (0) 53 minutes ago             sweet_bose
+
+# 현재 사용량
+$ docker stats --no-stream
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O   BLOCK I/O   PIDS
+358ebb33d8e0   monitor-test   0.00%     21.48MiB / 15.67GiB   0.13%     1.13kB / 126B   16.6MB / 4.1kB   7
+
+# monitor-test 삭제
+$ docker rm -f monitor-test
+$ docker ps -a
+CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
+87343a9c1ce5   hello-world   "/hello"   55 minutes ago   Exited (0) 55 minutes ago             sweet_bose
+```
+
+
+### 5.3 Docker 컨테이너 실행 실습
+
+#### hello-world 실행
+```
+$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+4f55086f7dd0: Pull complete 
+Digest: sha256:7f4da0fc94bcece205a8c0b6f4d11c8196924654ffe5c4d1aa439b7f632048b2
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+```
+
 
 
 ## ⚠️ 트러블 슈팅
@@ -345,9 +436,52 @@ Running
 
 
 ### 2. GitHub 연동
+GitHub 연동 시, user.name을 잘못 입력하여 변경하려고 한다
+1. 해당 프로젝트 디렉토리 내에서 git config 명령어 실행
+2. git config --global로 다시 명령어 수행
 
+```
+credential.helper=osxkeychain
+user.name=Youngshin
+user.email=ottermere21@gmail.com
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.ignorecase=true
+core.precomposeunicode=true
+remote.origin.url=https://github.com/ottermere21/codyssey-e1-1-workstation.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.remote=origin
+branch.main.merge=refs/heads/main
+branch.main.vscode-merge-base=origin/main
+user.name=ottermere21
+user.email=ottermere21@gmail.com
+```
 
+#### 2.1 해결 방법
 
+```
+$ git config --unset user.name
+$ git config --unset user.email
+
+$ git config --list
+credential.helper=osxkeychain
+user.name=Youngshin
+user.email=ottermere21@gmail.com
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.ignorecase=true
+core.precomposeunicode=true
+remote.origin.url=https://github.com/ottermere21/codyssey-e1-1-workstation.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.remote=origin
+branch.main.merge=refs/heads/main
+branch.main.vscode-merge-base=origin/main
+```
+깔끔하게 통일 된 것을 확인할 수 있다.
 
 
 ## ☑️ 기능 요구 사항 Checklist
@@ -371,8 +505,8 @@ Running
 - [x] 최소 요구: 파일 1개, 디렉토리 1개에 대해 권한 변경 실험을 수행한다.
 
 **4. Docker 설치 및 기본 점검**
-- [ ] Docker 버전 확인 결과를 기록한다. (docker --version)
-- [ ] Docker 데몬 동작 여부 확인 결과를 기록한다. (docker info 또는 동등 점검)
+- [x] Docker 버전 확인 결과를 기록한다. (docker --version)
+- [x] Docker 데몬 동작 여부 확인 결과를 기록한다. (docker info 또는 동등 점검)
 
 **5. Docker 기본 운영 명령 수행**
 - [ ] 이미지: 다운로드/목록 확인 (예: docker images)
@@ -405,7 +539,7 @@ Running
 - [ ] 기술 문서에 생성/연결/검증 절차(명령+출력)를 포함한다.
 
 **10. Git 설정 및 GitHub 연동**
-- [ ] Git 사용자 정보/기본 브랜치 설정을 완료하고 git config --list 결과를 기록한다.
+- [x] Git 사용자 정보/기본 브랜치 설정을 완료하고 git config --list 결과를 기록한다.
 - [ ] GitHub 로그인 및 저장소 연동을 완료하고, 연동 증거(스크린샷 등)를 기술 문서에 첨부한다.
 
 **11. 보안 및 개인정보 보호**
