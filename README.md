@@ -128,7 +128,10 @@ $ git config user.email "ottermere21@gmail.com"
 
 # 연동 완료
 $ git config --list
+ppororiranyo2846201258@c6r9s8 codyssey-e1-1-workstation % git config --list
 credential.helper=osxkeychain
+user.name=Youngshin
+user.email=ottermere21@gmail.com
 core.repositoryformatversion=0
 core.filemode=true
 core.bare=false
@@ -142,6 +145,8 @@ branch.main.merge=refs/heads/main
 branch.main.vscode-merge-base=origin/main
 user.name=ottermere21
 user.email=ottermere21@gmail.com
+
+
 ```
 
 
@@ -338,6 +343,13 @@ Running
  .DS_Store 파일은 Desktop Services Store로, Finder에서 해당 폴더를 볼 때 설정 했던 보기 옵션(아이콘 위치, 크기, 보기 방식, 배경색 등)을 저장하는 파일이다. 따라서 GitHub에는 올릴 필요가 전혀 없는 파일이다.
   하지만 이미 커밋을 해서 GitHub에 올라와있는 상태이다. 
 
+
+### 2. GitHub 연동
+
+
+
+
+
 ## ☑️ 기능 요구 사항 Checklist
 **1. 제출 저장소 및 기술 문서**
 - [ ] GitHub Repository 링크로 제출한다.
@@ -438,4 +450,3 @@ Running
 - [ ] Git 사용자 정보·기본 브랜치 설정 후, VSCode에서 GitHub 로그인 및 저장소 연동 완료
 - [ ] 민감한 개인 정보(ID/PW, 토큰 등)가 포함되지 않도록 주의한다.
 
-** mission.png 파일 삭제하기 **
