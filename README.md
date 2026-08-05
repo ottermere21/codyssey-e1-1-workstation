@@ -19,7 +19,7 @@
     | **주요 용도** | **개발 환경** (내 PC에서 코드 수정시 컨테이너에 즉시 반영) | **운영/DB 환경** (데이터 보존, 백업, 성능 중심) |
     | **특징** | 내 PC의 기존 파일/폴더를 그대로 연결 | Docker 외의 일반 사용자가 직접 파일 수정하기 어려움 |
     | **명령어 예시** | `-v /Users/me/app:/app` <br> => 내 PC의 `/Users/me/app` 폴더 ~ 컨테이너의 `/app` 경로 연결| `-v my_db_data:/var/lib/mysql` <br> => Docker 전용 공간의 `my_db_data`라는 창고를 만들고 DB 저장 경로 `/var/lib/mysql` 와 연결|
-- **Terminal VS Shell**
+- **Terminal VS Shell VS Console **
     |      | 터미널 (Terminal) | 쉘 (Shell) |
     | :--- | :--- | :--- |
     | **역할** | 사용자의 입력을 받고 결과를 화면에 보여주는 껍데기/앱 | 사용자가 입력한 명령어를 해석해서 OS에 전달하는 엔진 |
@@ -104,8 +104,48 @@ git version 2.50.1 (Apple Git-155)
 ## 3. 디렉토리 구조
 
 
+## 4. GitHub 연동
+```
+# 연동 전
+$ git config --list 
+credential.helper=osxkeychain
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.ignorecase=true
+core.precomposeunicode=true
+remote.origin.url=https://github.com/ottermere21/codyssey-e1-1-workstation.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.remote=origin
+branch.main.merge=refs/heads/main
+branch.main.vscode-merge-base=origin/main
 
-## 4. Terminal
+
+# 연동
+$ git config user.name "ottermere21"
+$ git config user.email "ottermere21@gmail.com"
+
+# 연동 완료
+$ git config --list
+credential.helper=osxkeychain
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+core.ignorecase=true
+core.precomposeunicode=true
+remote.origin.url=https://github.com/ottermere21/codyssey-e1-1-workstation.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.remote=origin
+branch.main.merge=refs/heads/main
+branch.main.vscode-merge-base=origin/main
+user.name=ottermere21
+user.email=ottermere21@gmail.com
+```
+
+
+## 5. Terminal
 | **명령어** | **기능** | **명령어** | **기능** |
 | --- | --- | --- | --- |
 | **`pwd`** | 현재 작업 위치(폴더) 경로 출력 <br> print working directory | **`mkdir <폴더명>`** | 새로운 폴더 생성 |
@@ -210,7 +250,6 @@ README.md
 ```
 
 ### 4.2 권한 실습
-
 | 구분 | 권한 기호 (`rwx`) | 8진수 숫자 | 파일에서의 의미 | 디렉토리에서의 의미 | 자주 쓰이는 조합 예시 |
 | :--- | :---: | :---: | :--- | :--- | :--- |
 | **Read (읽기)** | **`r`** | **4** | 파일 내용 조회 (`cat` 등) | 폴더 내부 파일 목록 확인 (`ls`) | • **`644`** (`rw-r--r--`): 일반 파일 기본값 |
@@ -218,15 +257,13 @@ README.md
 | **Execute (실행)** | **`x`** | **1** | 프로그램/스크립트 실행 | 폴더 내부로 접근/이동 (`cd`) | • **`700`** (`rwx------`): 개인 전용 비밀 파일/키 |
 | **Denied (없음)** | **`-`** | **0** | 권한 없음 | 권한 없음 | • **`777`** (`rwxrwxrwx`): 모든 사용자 전체 허용 (주의) |
 
-
+#### 현재 권한 확인
 ```
 $ ls -l
 total 40
 -rw-r--r--@ 1 ys  staff  17597  8월  3 20:04 README.md
 drwxr-xr-x  2 ys  staff     64  8월  3 20:06 test
 -rw-r--r--  1 ys  staff      0  8월  3 20:06 test.txt
-
-
 ```
 
 |           | 기존 권한           | 소유자(User) | 그룹(Group) | 기타 사용자(Others) |
@@ -234,7 +271,7 @@ drwxr-xr-x  2 ys  staff     64  8월  3 20:06 test
 | test.txt  | rw-r--r-- (644) | 읽기/쓰기     | 읽기 전용     | 읽기 전용          |
 | test 디렉토리 | rwxr-xr-x (755) | 읽기/쓰기/실행  | 읽기/실행     | 읽기/실행          |
 
-
+#### 실습1: 모든 권한 제한
 ```
 $ chmod 000 test.txt
 $ chmod 000 test
@@ -251,8 +288,8 @@ d---------  2 ys  staff     64  8월  3 20:06 test
 | test.txt  | ---------  (000) | X | X | X |
 | test 디렉토리 | --------- (000) | X | X | X |
 
-![폴더 권한](./docs/screenshots/4-2-permission1.png)
-![파일 권한](./docs/screenshots/4-2-permission2.png)
+<img src="./docs/screenshots/4-2-permission1.png" width="70%" height="70%">
+<img src="./docs/screenshots/4-2-permission2.png" width="70%" height="70%">
 
 
 ```
