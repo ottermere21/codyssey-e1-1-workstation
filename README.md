@@ -3,69 +3,6 @@
 이번 미션의 목표는 리눅스 CLI(터미널), Docker, Git/GitHub을 직접 세팅해보며, 내가 만든 코드/프로젝트를 다른 컴퓨터에서도 손쉽게 재현 가능할 수 있는 실행 환경을 구축해보는 것이다.
 
 
-## 0. Pre-Setup
-### 0.1 
-- 포트 매핑(Port Mapping): 외부(내 PC, 인터넷 등)에서 오는 요청을 네트워크 내부(가상머신, 컨테이너 등)의 특정 공간으로 연결해주는 작업. ≈ 통로 연결
-    - ⓔ `-p 8080:80`: 내 PC의 8080번 포트로 들어오면 컨테이너 내부의 80번 포트로 연결
-- 데이터 영속성: 프로그램/컨테이너가 종료되거나 전원이 꺼져도, 데이터가 사라지지 않고 지속적으로 유지/저장되는 특성
-- 바인트 마운트/볼륨: Docker Container가 꺼지거나 삭제 되어도 데이터를 영속하게 유지하고, 내 PC와 Container 간 파일/폴더를 공유하기 위한 기술
-    - 바인트 마운트(Bint Mount): 내 PC의 특정 폴더를 컨테이너와 직접 연결해서 코드 수정할 때 쓰는 방식
-    - 볼륨(Volume): Docker가 관리하는 안전한 창고에 DB/데이터를 안 날아가게 보관할 때 쓰는 방식
-
-    | 구분 | **바인드 마운트 (Bind Mount)** | **볼륨 (Volume)** |
-    | :--- | :--- | :--- |
-    | **저장 위치** | 내 PC의 **특정 원하는 폴더 경로**| Docker가 직접 관리하는 **격리된 전용 저장 공간** |
-    | **관리 주체** | 사용자가 직접 폴더 및 파일 관리 | **Docker**가 전적으로 관리 (`docker volume` 명령어) |
-    | **주요 용도** | **개발 환경** (내 PC에서 코드 수정시 컨테이너에 즉시 반영) | **운영/DB 환경** (데이터 보존, 백업, 성능 중심) |
-    | **특징** | 내 PC의 기존 파일/폴더를 그대로 연결 | Docker 외의 일반 사용자가 직접 파일 수정하기 어려움 |
-    | **명령어 예시** | `-v /Users/me/app:/app` <br> => 내 PC의 `/Users/me/app` 폴더 ~ 컨테이너의 `/app` 경로 연결| `-v my_db_data:/var/lib/mysql` <br> => Docker 전용 공간의 `my_db_data`라는 창고를 만들고 DB 저장 경로 `/var/lib/mysql` 와 연결|
-- **Terminal VS Shell VS Console **
-    |      | 터미널 (Terminal) | 쉘 (Shell) |
-    | :--- | :--- | :--- |
-    | **역할** | 사용자의 입력을 받고 결과를 화면에 보여주는 껍데기/앱 | 사용자가 입력한 명령어를 해석해서 OS에 전달하는 엔진 |
-    | **비유** | 모니터 + 키보드 (인터페이스) | 명령을 알아듣고 처리하는 통역사 / 뇌 |
-    | **종류** | macOS Terminal, iTerm2, VS Code Terminal, Warp 등 | bash, zsh, fish, powershell 등 |
-
-- **절대 경로, 상대 경로**
-    | 구분 | **절대 경로 (Absolute Path)** | **상대 경로 (Relative Path)** |
-    | :--- | :--- | :--- |
-    | **기준점** | **최상위 루트 디렉토리 (`/`)** | **현재 내가 위치한 디렉토리 (`.`)** |
-    | **특징** | 출발점에 상관없이 경로가 항상 일정함 | 내가 어디 있느냐에 따라 작성하는 경로가 달라짐 |
-    | **장점** | 어디서 실행하든 확실하게 목적지를 찾아감 | 경로가 짧고 깔끔하며, 폴더를 통째로 옮겨도 경로가 안 깨짐 |
-    | **표기 예시** | `/Users/username/Desktop/project/index.js` | `./index.js` 또는 `../src/app.js` |
-
-
-
-
-
-### 0.2 Docker 관련
-- Docker Demon: 도커의 엔진 역할을 한는 백그라운드 실행 프로세스. ≈ 공장장
-    1. 명령 대기: 사용자가 명령어 입력하면, 요청을 받아서 해석
-    2. 리소스 관리: docker image(설계도)를 내려받고, container(실제제품)를 생성/실행하며, 네트워크/저장공간 관리
-    3. 백그라운드 실행: 눈에 안보여도 시스템 뒤편(dockerd)에서 계속 container 돌봄
-    - docker demon은 OS의 커널과 직접 소통하며 자원 할당하기 때문에 보통 root 권한으로 실행됨 ← sudo 필요
-- **서울캠퍼스 환경에서 sudo 권한 명령어 사용이 제한되는 이유?**
-    - sudo: 관리자(root) 권한으로 명령어 실행을 요청하는 명렁어. 'SuperUser Do' 또는 'Substitute User Do'
-    - 다수가 사용하는 공용 시스템의 보안 사고 방지(악성 코드, 시스템 설정 파일 삭제 등)
-- **Docker 대신 OrbStack을 사용하는 이유?**
-    - Rootless 방식의 동작
-        - 기존 Docker: Docker Demon이 내 PC의 root 권한으로 실행
-        - OrbStack: 일반 사용자 권한으로 띄운 VM의 관리자 권한으로 Docker Demon 제어
-
-        |         | Docker                          | OrbStack                        |
-        | ------- | ------------------------------- | ------------------------------- |
-        | **구조**      | 내 PC > 무거운 Linux VM > Container | 내 PC > 초경량 Linux VM > Container |
-        | **sudo 우회** | 내 PC의 root 권한 요구                | VM의 root 권한 요구                  |
-- **이미지 (Image)**
-    - 컨테이너를 생성하기 위한 실행 가능한 읽기 전용 템플릿. ≈ 설계도
-    - 애플리케이션 실행에 필요한 코드,라이브러리,환경변수,설정 등이 포함됨
-- **컨테이너 (Container)**
-    - 이미지를 바탕으로 격리된 공간에서 실제로 실행되는 프로세스
-    - 하나의 이미지로 여러개의 독립된 컨테이너 생성 가능
-
-- 컨테이너 VS 가상머신 ??
-
-
 ## 1. 실행 환경
 |        |        |
 | ------ | ------ |
@@ -90,21 +27,10 @@ git version 2.50.1 (Apple Git-155)
 ```
 
 
-## 2. 수행 체크리스트
-- [x] [터미널 기본 조작 및 폴더 구성](#41-터미널-기본-명령어-실습)
-- [x] [권한 변경 실습](#42-권한-실습)
-- [x] [Docker,OrbStack 설치/점검](#51-dockerorbstack-설치-및-기본--점검)
-- [ ] hello-world 실행
-- [ ] Dockerfile 빌드/실행
-- [ ] 포트 매핑 접속(2회)
-- [ ] 바인드 마운트 반영
-- [ ] 볼륨 영속성
-- [ ] Git 설정 + VSCode GitHub 연동
-
-## 3. 디렉토리 구조
+## 2. 디렉토리 구조
 
 
-## 4. GitHub 연동
+## 3. GitHub 연동
 ```
 # 연동 전
 $ git config --list 
@@ -148,28 +74,40 @@ user.email=ottermere21@gmail.com
 
 
 ```
+## 명령어
+### 터미널 명령어
+| **명령어** | **기능** |
+| :--- | :--- |
+| **`pwd`** <br> (print working directory) | 현재 작업 위치(폴더) 경로 출력 |
+| **`ls`** <br> (list) | 현재 작업 위치 파일 전체 목록 보기 |
+| **`cd <경로>`** | 지정한 폴더 위치로 이동 <br> - `cd ..`: 상위(이전) 폴더로 이동  <br> - `cd ~`: 홈 디렉토리로 바로 이동|
+| **`cat <파일명>`** <br> (concatenate) | 파일 내용 전체 출력 |
+| **`clear`** | 터미널 화면 깨끗이 정돈 |
+| **`mkdir <폴더명>`** | 새로운 폴더 생성 |
+| **`touch <파일명>`** | 빈 파일 생성 |
+| **`cp <원본> <복사본>`** | 파일 복사 (`-r`은 폴더) |
+| **`mv <이동> <목적지>`** | 파일 이동 및 이름 변경 |
+| **`rm <파일명>`** | 파일 삭제 (휴지통 안 거침) <br> - `rm -rf <폴더명>`: 폴더 및 내부 파일 전체 삭제 |
+| **`open <경로>`** | 맥 Finder로 해당 폴더 열기 |
+| **`curl`** <br> (client URL) | 웹사이트에서 파일/데이터 가져오기 <br> - `curl -o <파일명> <URL>`: 파일 저장 |
 
 
-## 5. Terminal
-| **명령어** | **기능** | **명령어** | **기능** |
-| --- | --- | --- | --- |
-| **`pwd`** | 현재 작업 위치(폴더) 경로 출력 <br> print working directory | **`mkdir <폴더명>`** | 새로운 폴더 생성 |
-| **`ls -al`** | 숨김 파일 포함 전체 목록 보기 <br> list | **`touch <파일명>`** | 빈 파일 생성 |
-| **`cd <경로>`** | 지정한 폴더 위치로 이동 | **`cp <원본> <복사본>`** | 파일 복사 (`-r`은 폴더) |
-| **`cd ..`** | 상위(이전) 폴더로 이동 | **`mv <이동> <목적지>`** | 파일 이동 및 이름 변경 |
-| **`cd ~`** | 홈 디렉토리로 바로 이동 | **`rm <파일명>`** | 파일 삭제 (휴지통 안 거침) |
-| **`cat <파일명>`** | 파일 내용 전체 출력 <br> concatenate | **`rm -rf <폴더명>`** | 폴더 및 내부 파일 전체 삭제 |
-| **`clear`** | 터미널 화면 깨끗이 정돈 | **`open .`** | 현재 폴더를 맥 Finder로 열기 | 
+| **기호 / 옵션** | **의미** |
+| :--- | :--- |
+| **`..`**  <br> (Upper Directory) | **상위(이전) 폴더**를 나타내는 경로 기호 <br>(예: `cd ..`) |
+| **`.`** <br> (Current Directory) | **현재 위치한 폴더**를 나타내는 경로 기호 <br>(예: `open .`, `./script.sh`) |
+| **`~`** <br> (Home Directory) | 로그인한 **사용자의 홈 폴더 경로**(`/Users/사용자명`)를 뜻하는 줄임표 <br> (예: `cd ~`) |
+| **`-a`** | **a**ll : 숨김 파일을 포함한 모든 파일/폴더 |
+| **`-l`** | **l**ist: 권한·크기·날짜 등 상세 목록 보기 |
+| **`-r`** | **r**ecursive : 폴더 내부까지 재귀적으로 하위 항목 전부 포함|
+| **`-f`** | **f**orce : 강제로 경고 없이 |
+| **`-d`** | **d**etached : 백그라운드에서 실행 |
+| **`-o`** | **o**utput : 출력 |
+| **`-I`** | **I**nformation : 헤더 정보만 보기 | 
 
-| 기호 / 옵션 | 풀이 | 의미 |
-| :--- | :--- | :--- |
-| **`-al`** | **a**ll + **l**ong | 숨김 파일 포함(`-a`)해서, 권한·크기·날짜 등 상세 정보(`-l`)까지 전부 보여주는 `ls` 옵션 |
-| **`-rf`** | **r**ecursive + **f**orce | 폴더 내부까지 재귀적으로 하위 항목 전부 포함(`-r`)하고, 경고 없이 강제로(`-f`) 삭제하는 `rm` 옵션 |
-| **`..`** | Upper Directory | **상위(이전) 폴더**를 나타내는 경로 기호 <br>(예: `cd ..`) |
-| **`.`** | Current Directory | **현재 위치한 폴더**를 나타내는 경로 기호 <br>(예: `open .`, `./script.sh`) |
-| **`~`** | Home Directory | 로그인한 **사용자의 홈 폴더 경로**(`/Users/사용자명`)를 뜻하는 줄임표 <br> (예: `cd ~`) |
 
-### 5.1 터미널 기본 명령어 실습
+## 4. Terminal
+### 4.1 터미널 기본 명령어 실습
 ```
 # 1. 현재 위치 확인
 $ pwd
@@ -254,7 +192,7 @@ $ ls
 README.md
 ```
 
-### 5.2 권한 실습
+### 4.2 권한 실습
 | 구분 | 권한 기호 (`rwx`) | 8진수 숫자 | 파일에서의 의미 | 디렉토리에서의 의미 | 자주 쓰이는 조합 예시 |
 | :--- | :---: | :---: | :--- | :--- | :--- |
 | **Read (읽기)** | **`r`** | **4** | 파일 내용 조회 (`cat` 등) | 폴더 내부 파일 목록 확인 (`ls`) | • **`644`** (`rw-r--r--`): 일반 파일 기본값 |
@@ -276,7 +214,7 @@ drwxr-xr-x  2 ys  staff     64  8월  3 20:06 test
 | test.txt  | rw-r--r-- (644) | 읽기/쓰기     | 읽기 전용     | 읽기 전용          |
 | test 디렉토리 | rwxr-xr-x (755) | 읽기/쓰기/실행  | 읽기/실행     | 읽기/실행          |
 
-#### 실습1: 모든 권한 제한
+#### 실습: 모든 권한 제한
 ```
 $ chmod 000 test.txt
 $ chmod 000 test
@@ -391,7 +329,8 @@ $ docker ps -a
 CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
 87343a9c1ce5   hello-world   "/hello"   55 minutes ago   Exited (0) 55 minutes ago             sweet_bose
 ```
-
+- 컨테이너 삭제 : rm -f 컨테이너이름 or 컨테이너ID
+- 이미지 삭제 : rmi -f 이미지이름 or 이미지ID
 
 ### 5.3 Docker 컨테이너 실행 실습
 
@@ -427,6 +366,266 @@ For more examples and ideas, visit:
 
 ```
 
+#### Ubuntu 컨테이너
+```
+$ docker run -it --name ubuntu-test ubuntu bash
+Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+557836a62b76: Pull complete 
+d73407a274fb: Pull complete 
+277f396f91f3: Download complete 
+Digest: sha256:678c6550cc43645e08669028bc177f50be4e7c5b8cca677067b1914d4afc7a03
+Status: Downloaded newer image for ubuntu:latest
+
+$ root@971fe36a1d49:/# ls -al
+total 12
+drwxr-xr-x   1 root root   6 Aug 10 12:06 .
+drwxr-xr-x   1 root root   6 Aug 10 12:06 ..
+-rwxr-xr-x   1 root root   0 Aug 10 12:06 .dockerenv
+drwxr-xr-x   1 root root  26 Jul 24 13:05 .rock
+lrwxrwxrwx   1 root root   7 Apr 20 08:46 bin -> usr/bin
+drwxr-xr-x   1 root root   0 Apr 20 08:46 boot
+drwxr-xr-x   5 root root 340 Aug 10 12:06 dev
+drwxr-xr-x   1 root root  56 Aug 10 12:06 etc
+drwxr-xr-x   1 root root  12 Jul 24 13:05 home
+lrwxrwxrwx   1 root root   7 Apr 20 08:46 lib -> usr/lib
+drwxr-xr-x   1 root root   0 Jul 24 13:02 media
+drwxr-xr-x   1 root root   0 Jul 24 13:02 mnt
+drwxr-xr-x   1 root root   0 Jul 24 13:02 opt
+dr-xr-xr-x 239 root root   0 Aug 10 12:06 proc
+drwx------   1 root root  30 Jul 24 13:05 root
+drwxr-xr-x   1 root root  22 Jul 24 13:05 run
+lrwxrwxrwx   1 root root   8 Apr 20 08:46 sbin -> usr/sbin
+drwxr-xr-x   1 root root   0 Jul 24 13:02 srv
+dr-xr-xr-x  11 root root   0 Aug 10 12:06 sys
+drwxrwxrwt   1 root root   0 Jul 24 13:03 tmp
+drwxr-xr-x   1 root root  10 Jul 24 13:01 usr
+drwxr-xr-x   1 root root  90 Jul 24 13:05 var
+
+$ root@971fe36a1d49:/# echo "Hello from Ubuntu container!"
+Hello from Ubuntu container!
+
+$ root@971fe36a1d49:/# exit
+exit
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                      PORTS     NAMES
+971fe36a1d49   ubuntu    "bash"    5 minutes ago   Exited (0) 16 seconds ago             ubuntu-test
+```
+
+#### attach VS exec
+```
+# attach
+$ docker start ubuntu-test
+ubuntu-test
+
+$ docker attach ubuntu-test
+$ root@971fe36a1d49:/# exit
+exit
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS                     PORTS     NAMES
+971fe36a1d49   ubuntu    "bash"    16 minutes ago   Exited (0) 5 seconds ago             ubuntu-test
+
+```
+- attach는 컨테이너의 주TTY를 점유하여 해당 컨테이너 안에서 명령어를 실행하는 방식. 따라서 컨테이너 밖으로 나가려면 출구로 나가야 함
+- 
+
+```
+# exec
+$ docker start ubuntu-test
+ubuntu-test
+$ docker exec -it ubuntu-test bash
+$ root@971fe36a1d49:/# exit
+exit
+
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS          PORTS     NAMES
+971fe36a1d49   ubuntu    "bash"    21 minutes ago   Up 20 seconds             ubuntu-test
+
+```
+- exec는 기존 실행 중인 컨테이너에 새로운 명령어를 실행하는 방식. 따라서 컨테이너는 계속 실행 중인 상태로 유지됨
+- 메인 프로세스가 아닌 새 프로세스를 임시로 실행했다가 종료한 것이기 때문
+
+| 명령어             | 주요 역할 및 특징                             | exit 입력 시 컨테이너 상태 변화                    |
+| --------------- | -------------------------------------- | --------------------------------------- |
+| `docker attach` | 실행 중인 컨테이너의 메인 프로세스(PID 1)의 표준 입출력에 연결 | 종료 (Exited) <br> → 메인 프로세스가 종료되기 때문         |
+| `docker exec`   | 실행 중인 컨테이너에 별도로 새로운 별도 프로세스를 실행하여 상호작용 | 유지 (Running) <br> → 메인 프로세스가 백그라운드에 남아있기 때문 |
+
+
+```
+# 새 컨테이너 생성 + 실행 + 첫번째 프로그램으로 bash를 띄움
+$ docker run -it --name ubuntu-test ubuntu bash
+
+# 이미 켜진 컨테이너의 표준 입출력에 붙어서 사용
+$ docker attach ubuntu-test
+
+# 이미 켜진 컨테이너에 추가로 bash를 띄워서 사용
+$ docker exec -it ubuntu-test bash
+```
+
+### 5.4 기존 Dockerfile 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + 포트 매핑
+- [정적 웹 콘텐츠](./index.html)
+- [기존 NGINX 이미지 기반 이미지](./Dockerfile)
+
+
+- 내가 커스텀한 포인트: 
+
+```
+# 이미지 빌드
+$ docker build -t my-web:1.0 .
+[+] Building 1.7s (7/7) FINISHED                                                       docker:orbstack
+ => [internal] load build definition from Dockerfile                                              0.0s
+ => => transferring dockerfile: 159B                                                              0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpine                                   1.4s
+ => [internal] load .dockerignore                                                                 0.0s
+ => => transferring context: 2B                                                                   0.0s
+ => [internal] load build context                                                                 0.0s
+ => => transferring context: 59B                                                                  0.0s
+ => [1/2] FROM docker.io/library/nginx:alpine@sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3  0.0s
+ => => resolve docker.io/library/nginx:alpine@sha256:4a73073bd557c65b759505da037898b61f1be6cbcc3  0.0s
+ => CACHED [2/2] COPY app/ /usr/share/nginx/html/                                                 0.0s
+ => exporting to image                                                                            0.1s
+ => => exporting layers                                                                           0.0s
+ => => exporting manifest sha256:ba6b64e49474e68c6664efae7074c6fe78eb57c99d0377dff98e316e0f2eb55  0.0s
+ => => exporting config sha256:91ccaf5352a65802bdd62150491b9cb8c006a05824a60d7bb1fc25fc8a92173a   0.0s
+ => => exporting attestation manifest sha256:0dd0e01e92555a327fc16f53bbcf327cae4edaeaacfb02892d3  0.0s
+ => => exporting manifest list sha256:a5f6628ca07fdb87f9f5d80268103374659b656a8345f66c1f2eaa6e14  0.0s
+ => => naming to docker.io/library/my-web:1.0                                                     0.0s
+ => => unpacking to docker.io/library/my-web:1.0                                                  0.0s
+y
+
+# 8080 포트 컨테이너 실행
+$ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
+7dbc427e0eb9bb7f7c2b66f58aa2465e2fd8d886e1a1bb61b8c450aa11abc1ef
+
+# 8081 포트 컨테이너 실행
+$ docker run -d -p 8081:80 --name my-web-8081 my-web:1.0
+c274c711719dd64f98e96d352bc30c39459052ab6a06cd8f5e1e903d3a83f291
+
+$ docker ps
+CONTAINER ID   IMAGE        COMMAND                   CREATED              STATUS              PORTS                                     NAMES
+c274c711719d   my-web:1.0   "/docker-entrypoint.…"   28 seconds ago       Up 28 seconds       0.0.0.0:8081->80/tcp, [::]:8081->80/tcp   my-web-8081
+7dbc427e0eb9   my-web:1.0   "/docker-entrypoint.…"   About a minute ago   Up About a minute   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my-web-8080
+```
+![8080](./screenshots/8080.png) 
+![8081](./screenshots/8081.png)
+
+```
+$ curl http://localhost:8080
+!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Custom Web Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+.
+.
+.
+(생략)
+.
+.
+.
+<body>
+    <div class="card">
+        <h1>안녕하세요!</h1>
+        <p>Nginx 기본 index.html 대신, 호스트에서 직접 작성하고 수정한 커스텀 페이지입니다!</p>
+        <span class="status-badge">Modified and Running</span>
+    </div>
+</body>
+
+</html>%     
+
+
+$ curl http://localhost:8081
+!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Custom Web Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #fafafa;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+.
+.
+.
+(생략)
+.
+.
+.
+<body>
+    <div class="card">
+        <h1>안녕하세요!</h1>
+        <p>Nginx 기본 index.html 대신, 호스트에서 직접 작성하고 수정한 커스텀 페이지입니다!</p>
+        <span class="status-badge">Modified and Running</span>
+    </div>
+</body>
+
+</html>%     
+
+$ curl -I http://localhost:8080
+HTTP/1.1 200 OK
+Server: nginx/1.31.3
+Date: Fri, 14 Aug 2026 11:20:57 GMT
+Content-Type: text/html
+Content-Length: 1647
+Last-Modified: Fri, 14 Aug 2026 10:28:19 GMT
+Connection: keep-alive
+ETag: "6a7eedc3-66f"
+Accept-Ranges: bytes
+
+$ curl -I http://localhost:8081
+HTTP/1.1 200 OK
+Server: nginx/1.31.3
+Date: Fri, 14 Aug 2026 11:21:20 GMT
+Content-Type: text/html
+Content-Length: 1647
+Last-Modified: Fri, 14 Aug 2026 10:28:19 GMT
+Connection: keep-alive
+ETag: "6a7eedc3-66f"
+Accept-Ranges: bytes
+```
+- `-I`: HTTP/HTTPS 요청 시 헤더만 출력
+
+
+### 5.5 Bind Mount, Volume
+#### Bind Mount
+호스트의 특정 디렉토리를 컨테이너 내부 디렉토리에 연결하여, 소스코드 수정 시 이미지 빌드 및 컨테이너 재시작 없이 즉시 반영된다.
+
+- 호스트(내 컴퓨터)의 특정 파일/폴더를 컨테이너 내부 경로와 실시간 1:1 연결(동기화)하는 기술
+- 호스트에서 소스 코드를 수정하고 저장하면, 이미지를 다시 빌드(`docker build`)하지 않아도 컨테이너에 즉시 반영
+
+cf. 트러블 슈팅 3번 참고
+
+```
+$ docker run -d -p 8082:80 -v $(pwd)/app:/usr/share/nginx/html --name my-web-mount my-web:1.0
+```
+
+- 이전 포트에 다시 연결하지 않는 이유?
+
+#### Volume
 
 
 ## ⚠️ 트러블 슈팅
@@ -484,7 +683,64 @@ branch.main.vscode-merge-base=origin/main
 깔끔하게 통일 된 것을 확인할 수 있다.
 
 
-## ☑️ 기능 요구 사항 Checklist
+### 3. index.html 파일 변경 후, 포트 매핑된 웹페이지 접속 시 변경 사항이 반영되지 않는 현상
+
+#### case 1) index.html 수정 후, 컨테이너 삭제 후 재생성 
+```
+$ docker rm -f my-web-8080
+$ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
+```
+
+##### 원인
+이미지를 다시 빌드하지 않았기 때문에 변경 사항이 반영되지 않았다.
+컨테이너를 삭제해도 이미지를 다시 빌드하지 않으면 변경 사항이 반영되지 않는다.
+
+![컨테이너 삭제 후 재생성](./screenshots/trb_build.png)
+
+#### 해결방법
+```
+$ docker build -t my-web:1.0 .
+$ docker rm -f my-web-8080
+$ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
+```
+
+![이미지 빌드 후 재실행](./screenshots/trb_build_solved.png)
+
+### case 2) index.html 수정 후, build + 컨테이너 삭제 +  run 했는데 반영X
+```
+$ docker build -t my-web:1.0 .
+$ docker rm -f my-web-8080
+$ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
+```
+#### 원인
+기존 index.html 캐시가 남아있어서 반영이 안되는 것이다. 
+![캐시 미반영](./screenshots/trb_cache.png)
+
+
+#### 해결 방법
+강력한 새로고침(Cmd + Shift + R)을 하니까 기존 캐시가 삭제되고 수정된 index.html 파일이 반영되었다.
+![강력한 새로고침](./screenshots/trb_cache_solved.png)
+
+
+- 왜 바로 반영이 안될까? 
+    
+------
+
+## ☑️ 수행 체크리스트
+- [x] [터미널 기본 조작 및 폴더 구성](#41-터미널-기본-명령어-실습)
+- [x] [권한 변경 실습](#42-권한-실습)
+- [x] [Docker,OrbStack 설치/점검](#51-dockerorbstack-설치-및-기본--점검)
+- [ ] hello-world 실행
+- [ ] Dockerfile 빌드/실행
+- [ ] 포트 매핑 접속(2회)
+- [ ] 바인드 마운트 반영
+- [ ] 볼륨 영속성
+- [ ] Git 설정 + VSCode GitHub 연동
+
+<details>
+<summary>기능 요구 사항 체크리스트</summary>
+<div>
+
 **1. 제출 저장소 및 기술 문서**
 - [ ] GitHub Repository 링크로 제출한다.
 - 기술 문서(README.md 등)는 아래 내용을 반드시 포함한다.
@@ -547,7 +803,15 @@ branch.main.vscode-merge-base=origin/main
 - [ ] 의심되는 민감정보가 노출된 경우, 즉시 히스토리/문서에서 제거하고 재발급 절차를 수행한다 (가능한 범위에서).
 
 
-## ☑️ 최종 결과물 Checklist
+</div>
+</details>
+
+
+
+<details>
+<summary>최종 결과물 체크리스트</summary>
+<div>
+
 **1. 제출 저장소(GitHub Repository)**
 - [ ] 공개(또는 과제 제출 규칙에 맞는 권한)로 생성한다.
 - [ ] 저장소 링크만으로 아래 산출물 전부를 확인할 수 있어야 한다.
@@ -584,3 +848,5 @@ branch.main.vscode-merge-base=origin/main
 - [ ] Git 사용자 정보·기본 브랜치 설정 후, VSCode에서 GitHub 로그인 및 저장소 연동 완료
 - [ ] 민감한 개인 정보(ID/PW, 토큰 등)가 포함되지 않도록 주의한다.
 
+</div>
+</details>
