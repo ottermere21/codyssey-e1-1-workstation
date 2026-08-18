@@ -58,7 +58,7 @@ codyssey-e1-1-workstation/
 └── mission1-1.png       # 미션 요구사항 캡처 이미지
 ```
 
-## 3️⃣ GitHub 연동
+## 3️⃣ GitHub
 ```
 # 등록 전
 $ git config --list 
@@ -116,6 +116,28 @@ origin	https://github.com/ottermere21/codyssey-e1-1-workstation.git (fetch)
 origin	https://github.com/ottermere21/codyssey-e1-1-workstation.git (push)
 ```
 연동되어있음을 알 수 있다.
+
+
+```
+$ git log -n 3
+commit 629f5e4408efa6fde8f8664ba85176333b6f5be1 (HEAD -> main, origin/main, origin/HEAD)
+Author: Youngshin <ottermere21@gmail.com>
+Date:   Tue Aug 18 12:06:48 2026 +0900
+
+    fix: 마크다운 링크
+
+commit 7a00a3f533578421275cc4104160ba8bcba7f54d
+Author: Youngshin <ottermere21@gmail.com>
+Date:   Tue Aug 18 11:38:27 2026 +0900
+
+    docs: git remote
+
+commit 013a427a2a1ba16aa3a3bb63e8eebdc1a46c2daa
+Author: Youngshin <ottermere21@gmail.com>
+Date:   Tue Aug 18 11:17:02 2026 +0900
+
+    chore: .DS_Store 올라간거 삭제
+```
 
 
 ## 4️⃣ Terminal
@@ -306,42 +328,57 @@ $ docker ps -a
 CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
 87343a9c1ce5   hello-world   "/hello"   23 minutes ago   Exited (0) 23 minutes ago             sweet_bose
 ``` 
-- ctrl + z: 실행 중인 프로그램을 일시 중지시킨 후, Background로 보냄
-- bg VS fg????
-- --no-stream: 실시간으로 반복 출력되는 스트리밍 화면을 끄고, 명령어를 실행한 현재 시점의 상태 한 번만 출력한 뒤 종료
+monitor-test 컨테이너에 nginx 이미지를 실행해본다.
 ```
 # monitor-test 전
 $ docker stats --no-stream
 CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O   BLOCK I/O   PIDS
 
+
 # monitor-test 실행
 $ docker run -d --name monitor-test nginx
-358ebb33d8e0bedf3cc30a6effba4a938b4ef625bc175d376f042fdcfb15c553
 
 $ docker ps 
 CONTAINER ID   IMAGE     COMMAND                   CREATED         STATUS         PORTS     NAMES
-c3e26859c71b   nginx     "/docker-entrypoint.…"   3 seconds ago   Up 3 seconds   80/tcp    monitor-test
+649c39e09816   nginx     "/docker-entrypoint.…"   7 seconds ago   Up 6 seconds   80/tcp    monitor-test
 
 $ docker ps -a
-CONTAINER ID   IMAGE         COMMAND                   CREATED          STATUS                      PORTS     NAMES
-c3e26859c71b   nginx         "/docker-entrypoint.…"   20 seconds ago   Up 19 seconds               80/tcp    monitor-test
-87343a9c1ce5   hello-world   "/hello"                  53 minutes ago   Exited (0) 53 minutes ago             sweet_bose
+CONTAINER ID   IMAGE     COMMAND                   CREATED              STATUS                      PORTS     NAMES
+649c39e09816   nginx     "/docker-entrypoint.…"   About a minute ago   Up About a minute           80/tcp    monitor-test
+7dd3e86be1c5   alpine    "sleep infinity"          20 hours ago         Exited (137) 18 hours ago             vol-test-2
+
 
 # 현재 사용량
 $ docker stats --no-stream
-CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT   MEM %     NET I/O   BLOCK I/O   PIDS
-358ebb33d8e0   monitor-test   0.00%     21.48MiB / 15.67GiB   0.13%     1.13kB / 126B   16.6MB / 4.1kB   7
+CONTAINER ID   NAME           CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O        PIDS
+649c39e09816   monitor-test   0.00%     8.965MiB / 7.817GiB   0.11%     1.66kB / 126B   4.1kB / 8.19kB   11
+
+
+# 로그 확인
+$ docker logs --tail 10 monitor-test
+2026/08/18 03:38:05 [notice] 1#1: start worker process 28
+2026/08/18 03:38:05 [notice] 1#1: start worker process 29
+2026/08/18 03:38:05 [notice] 1#1: start worker process 30
+2026/08/18 03:38:05 [notice] 1#1: start worker process 31
+2026/08/18 03:38:05 [notice] 1#1: start worker process 32
+2026/08/18 03:38:05 [notice] 1#1: start worker process 33
+2026/08/18 03:38:05 [notice] 1#1: start worker process 34
+2026/08/18 03:38:05 [notice] 1#1: start worker process 35
+2026/08/18 03:38:05 [notice] 1#1: start worker process 36
+2026/08/18 03:38:05 [notice] 1#1: start worker process 37
+
 
 # monitor-test 삭제
 $ docker rm -f monitor-test
 $ docker ps -a
-CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
-87343a9c1ce5   hello-world   "/hello"   55 minutes ago   Exited (0) 55 minutes ago             sweet_bose
+CONTAINER ID   IMAGE     COMMAND            CREATED        STATUS                      PORTS     NAMES
+7dd3e86be1c5   alpine    "sleep infinity"   20 hours ago   Exited (137) 18 hours ago             vol-test-2
 ```
 
 ### 5.3 Docker 컨테이너 실행 실습
 
 #### ① hello-world 실행
+- hello-world는 Docker가 내 컴퓨터가 정상적으로 설치되고 동작하는 지 검증하기 위해 공식적으로 제공하는 초경량 테스트 이미지
 ```
 $ docker run hello-world
 Unable to find image 'hello-world:latest' locally
@@ -412,6 +449,7 @@ drwxr-xr-x   1 root root  90 Jul 24 13:05 var
 $ root@971fe36a1d49:/# echo "Hello from Ubuntu container!"
 Hello from Ubuntu container!
 
+# exit or Ctrl+D로 나가기
 $ root@971fe36a1d49:/# exit
 exit
 
@@ -421,6 +459,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                      P
 ```
 
 #### ③`attach` VS `exec`
+attach, exec
 ```
 # attach 실습
 $ docker start ubuntu-test
@@ -449,26 +488,24 @@ CONTAINER ID   IMAGE     COMMAND   CREATED          STATUS          PORTS     NA
 971fe36a1d49   ubuntu    "bash"    21 minutes ago   Up 20 seconds             ubuntu-test
 
 ```
-- attach는 컨테이너의 주TTY를 점유하여 해당 컨테이너 안에서 명령어를 실행하는 방식. 따라서 컨테이너 밖으로 나가려면 출구로 나가야 함
-- exec는 기존 실행 중인 컨테이너에 새로운 명령어를 실행하는 방식. 따라서 컨테이너는 계속 실행 중인 상태로 유지됨
-    - 메인 프로세스가 아닌 새 프로세스를 임시로 실행했다가 종료한 것이기 때문
 
 | 명령어             | 주요 역할 및 특징                             | exit 입력 시 컨테이너 상태 변화                    |
 | --------------- | -------------------------------------- | --------------------------------------- |
 | `docker attach` | 실행 중인 컨테이너의 메인 프로세스의 표준 입출력에 연결 | 종료 (Exited) <br> → 메인 프로세스가 종료되기 때문         |
-| `docker exec`   | 실행 중인 컨테이너에 별도로 새로운 별도 프로세스를 실행하여 상호작용 | 유지 (Running) <br> → 메인 프로세스가 백그라운드에 남아있기 때문 |
+| `docker exec`   | 실행 중인 컨테이너에 별도로 새로운 별도 프로세스를 실행하여 상호작용 | 유지 (Running) <br> → 새 프로세스를 실행,종료한 것이라, <br> 메인 프로세스가 백그라운드에 남아있기 때문 |
 
 
 ```
-# 새 컨테이너 생성 + 실행 + 첫번째 프로그램으로 bash를 띄움
+# 새 컨테이너 생성 + 실행 + 메인 프로세스로 bash를 띄움 => exit -> 정지
 $ docker run -it --name ubuntu-test ubuntu bash
 
-# 이미 켜진 컨테이너의 표준 입출력에 붙어서 사용
+# 이미 켜진 컨테이너의 표준 입출력에 붙어서 사용 => exit -> 정지
 $ docker attach ubuntu-test
 
-# 이미 켜진 컨테이너에 추가로 bash를 띄워서 사용
+# 이미 켜진 컨테이너에 추가로 bash를 띄워서 사용 => exit -> 실행 중
 $ docker exec -it ubuntu-test bash
 ```
+
 
 ### 5.4 기존 [Dockerfile](./CONCEPT.md#53-dockerfile) 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + [포트 매핑]
 ```
@@ -627,9 +664,7 @@ $ docker exec vol-test-2 cat /data/test.txt
 hello volume persistence
 
 ```
-- `sh`:
-- `-c`:
-- exec 사용 이유: bind mount의 경우 이미 호스트와 연결되어 있어 exec으로 바로 접근 가능하지만, volume은 연결된 컨테이너에서만 접근 가능하기 때문에 exec으로 볼륨에 접근해야한다.
+- `-c`: string 명령어를 쉘에서 실행
 
 컨테이너가 삭제 되어도 볼륨 속 데이터는 그대로 유지되는 것을 확인할 수 있다.
 
