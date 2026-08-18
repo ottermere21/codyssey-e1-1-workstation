@@ -14,8 +14,8 @@
 -----
 
 ## 1️⃣ 실행 환경
-|        |        |
-| ------ | ------ |
+|      |      |
+| ---- | ---- |
 | OS     | mac OS |
 | Shell  | zsh    |
 | Docker(OrbStack) | 29.4.0 |
@@ -60,7 +60,7 @@ codyssey-e1-1-workstation/
 
 ## 3️⃣ GitHub 연동
 ```
-# 연동 전
+# 등록 전
 $ git config --list 
 credential.helper=osxkeychain
 core.repositoryformatversion=0
@@ -76,12 +76,12 @@ branch.main.merge=refs/heads/main
 branch.main.vscode-merge-base=origin/main
 
 
-# 연동
+# 이름, 이메일 등록
 $ git config user.name "Youngshin"
 $ git config user.email "ottermere21@gmail.com"
 
 
-# 연동 완료
+# 등록 완료
 $ git config --list
 credential.helper=osxkeychain
 init.defaultbranch=main
@@ -103,6 +103,20 @@ branch.main.remote=origin
 branch.main.merge=refs/heads/main
 branch.main.vscode-merge-base=origin/main
 ```
+
+```
+git remote add origin https://github.com/사용자이름/저장소이름.git
+```
+원래는 이를 이용해서 내 PC Git <-> 원격 저장소 GitHub 연결하지만, 
+GitHub에서 clone 받아와서 사용했기 때문에 이미 연결되어 있었음.
+
+```
+$ git remote -v
+origin	https://github.com/ottermere21/codyssey-e1-1-workstation.git (fetch)
+origin	https://github.com/ottermere21/codyssey-e1-1-workstation.git (push)
+```
+연동되어있음을 알 수 있다.
+
 
 ## 4️⃣ Terminal
 ### 4.1 [터미널 기본 명령어](#./CONCEPT.md#41터미널-명령어) 실습
