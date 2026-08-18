@@ -38,11 +38,27 @@ git version 2.50.1 (Apple Git-155)
 
 
 ## 2️⃣ 디렉토리 구조
-
+```text
+codyssey-e1-1-workstation/
+├── app/
+│   ├── index.html       # 커스텀 웹페이지 메인 HTML
+│   └── index.md         # 백업 및 설명용 문서
+├── screenshots/         # 실습 증빙용 스크린샷 폴더
+│   ├── 4-2-permission1.png
+│   ├── 4-2-permission2.png
+│   ├── 8080.png
+│   ├── 8081.png
+│   ├── trb_build.png
+│   ├── trb_build_solved.png
+│   ├── trb_cache.png
+│   └── trb_cache_solved.png
+├── Dockerfile           # 커스텀 Nginx 웹 서버 이미지 빌드 파일
+├── CONCEPT.md           # 실습 관련 핵심 용어 및 개념 정리 문서
+├── README.md            # 미션 수행 기록 기술 문서 (현재 파일)
+└── mission1-1.png       # 미션 요구사항 캡처 이미지
+```
 
 ## 3️⃣ GitHub 연동
-cf. 트러블슈팅 2번 참고
-
 ```
 # 연동 전
 $ git config --list 
@@ -86,14 +102,10 @@ remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
 branch.main.remote=origin
 branch.main.merge=refs/heads/main
 branch.main.vscode-merge-base=origin/main
-
-
-
 ```
 
-## 5️⃣ Terminal
-- [터미널 명령어](#./CONCEPT.md#터미널-명령어)
-### 5.1 터미널 기본 명령어 실습
+## 4️⃣ Terminal
+### 4.1 [터미널 기본 명령어](#./CONCEPT.md#41터미널-명령어) 실습
 ```
 # 1. 현재 위치 확인
 $ pwd
@@ -178,7 +190,7 @@ $ ls
 README.md
 ```
 
-### 5.2 권한 실습
+### 4.2 권한 실습
 | 구분 | 권한 기호 (`rwx`) | 8진수(2진수) | 파일에서의 의미 | 디렉토리에서의 의미 |
 | :--- | :---: | :---: | :--- | :--- |
 | **Read (읽기)** | **`r`** | **4**(100) | 파일 내용 조회 (`cat` 등) | 폴더 내부 파일 목록 확인 (`ls`) |
@@ -238,8 +250,8 @@ drwxr-xr-x  2 ys  staff     64  8월  3 20:06 test
 ```
 
 
-## 6️⃣ Docker
-### 6.1 Docker/OrbStack 설치 및 기본  점검
+## 5️⃣ [Docker](#./CONCEPT.md#docker-관련)
+### 5.1 Docker/OrbStack 설치 및 기본  점검
 ```
 $ docker --version
 Docker version 29.4.0, build 9d7ad9f
@@ -265,7 +277,8 @@ $ orb status
 Running
 ```
 
-### 6.2 Docker 기본 운영 명령 실습
+### 5.2 [Docker 기본 명령어](#./CONCEPT.md#42docker명령어) 실습
+
 hello-world 실습 이후의 내용입니다.
 ```
 $ docker images
@@ -311,12 +324,10 @@ $ docker ps -a
 CONTAINER ID   IMAGE         COMMAND    CREATED          STATUS                      PORTS     NAMES
 87343a9c1ce5   hello-world   "/hello"   55 minutes ago   Exited (0) 55 minutes ago             sweet_bose
 ```
-- 컨테이너 삭제 : rm -f 컨테이너이름 or 컨테이너ID
-- 이미지 삭제 : rmi -f 이미지이름 or 이미지ID
 
-### 6.3 Docker 컨테이너 실행 실습
+### 5.3 Docker 컨테이너 실행 실습
 
-#### hello-world 실행
+#### ① hello-world 실행
 ```
 $ docker run hello-world
 Unable to find image 'hello-world:latest' locally
@@ -348,7 +359,7 @@ For more examples and ideas, visit:
 
 ```
 
-#### Ubuntu 컨테이너
+#### ② Ubuntu 컨테이너
 ```
 $ docker run -it --name ubuntu-test ubuntu bash
 Unable to find image 'ubuntu:latest' locally
@@ -395,7 +406,7 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS                      P
 971fe36a1d49   ubuntu    "bash"    5 minutes ago   Exited (0) 16 seconds ago             ubuntu-test
 ```
 
-#### `attach` VS `exec`
+#### ③`attach` VS `exec`
 ```
 # attach 실습
 $ docker start ubuntu-test
@@ -445,10 +456,7 @@ $ docker attach ubuntu-test
 $ docker exec -it ubuntu-test bash
 ```
 
-### 6.4 기존 Dockerfile 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + 포트 매핑
-- [정적 웹 콘텐츠](./index.html)
-- [기존 NGINX 이미지 기반 이미지](./Dockerfile)
-
+### 5.4 기존 [Dockerfile](./CONCEPT.md#53-dockerfile) 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + [포트 매핑]
 ```
 $ docker build -t my-web:1.0 .
 [+] Building 1.7s (7/7) FINISHED                                                       docker:orbstack
@@ -529,9 +537,9 @@ my-web-8081
 ![8081](./screenshots/8081.png)
 
 
-### 6.5 [Bind Mount, Volume](./CONCEPT.md#bind-mount-volume)
+### 5.5 [Bind Mount, Volume](./CONCEPT.md#bind-mount-volume)
 #### ① Bind Mount
-cf. 트러블 슈팅 3번 참고
+cf. 트러블 슈팅 2번
 
 - 바인트 마운트X ? -> docker build를 계속헤줘야 변경사항 반영
 
@@ -570,7 +578,7 @@ bind-mount-test
 
 #### ② Volume
 ```
-# 1. Docker 볼륨 생성 및 목록 확인
+# Docker 볼륨 생성 및 목록 확인
 $ docker volume create volume-data
 volume-data
 
@@ -578,7 +586,7 @@ $ docker volume ls
 DRIVER    VOLUME NAME
 local     volume-data
 
-# 2. 첫 번째 컨테이너에 볼륨 연결 실행 및 데이터 작성
+# 첫 번째 컨테이너에 볼륨 연결 실행 및 데이터 작성
 $ docker run -d --name vol-test-1 -v volume-data:/data alpine sleep infinity
 Unable to find image 'alpine:latest' locally
 latest: Pulling from library/alpine
@@ -593,11 +601,11 @@ $ docker exec vol-test-1 cat /data/test.txt
 hello volume persistence
 
 
-# 3. 첫 번째 컨테이너 삭제
+# 첫 번째 컨테이너 삭제
 $ docker rm -f vol-test-1
 vol-test-1
 
-# 4. 두 번째 컨테이너에 동일 볼륨 연결 및 데이터 보존 확인
+# 두 번째 컨테이너에 동일 볼륨 연결 및 데이터 보존 확인
 $ docker run -d --name vol-test-2 -v volume-data:/data alpine sleep infinity
 7dd3e86be1c55a46a43164cf213501c0da8d8ee0925ceae9488dcfedf29a95ae
 
@@ -672,26 +680,26 @@ $ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
 - [x] [터미널 기본 조작 및 폴더 구성](#41-터미널-기본-명령어-실습)
 - [x] [권한 변경 실습](#42-권한-실습)
 - [x] [Docker,OrbStack 설치/점검](#51-dockerorbstack-설치-및-기본--점검)
-- [ ] hello-world 실행
-- [ ] Dockerfile 빌드/실행
-- [ ] 포트 매핑 접속(2회)
-- [ ] 바인드 마운트 반영
-- [ ] 볼륨 영속성
-- [ ] Git 설정 + VSCode GitHub 연동
+- [x] hello-world 실행
+- [x] Dockerfile 빌드/실행
+- [x] 포트 매핑 접속(2회)
+- [x] 바인드 마운트 반영
+- [x] 볼륨 영속성
+- [x] Git 설정 + VSCode GitHub 연동
 
 <details>
 <summary>기능 요구 사항 체크리스트</summary>
 <div>
 
 **1. 제출 저장소 및 기술 문서**
-- [ ] GitHub Repository 링크로 제출한다.
+- [x] GitHub Repository 링크로 제출한다.
 - 기술 문서(README.md 등)는 아래 내용을 반드시 포함한다.
-    - [ ] 모든 수행 결과는 “기술 문서(README.md 등)”에서 확인 가능해야 한다.
+    - [x] 모든 수행 결과는 “기술 문서(README.md 등)”에서 확인 가능해야 한다.
     - [x] 프로젝트 개요(미션 목표 요약)
     - [x] 실행 환경(OS/쉘/터미널, Docker 버전, Git 버전)
-    - [ ] 수행 항목 체크리스트(터미널/권한/Docker/Dockerfile/포트/마운트/볼륨/Git/GitHub)
-    - [ ] 검증 방법(어떤 명령으로 무엇을 확인했는지) + 결과 위치/증거 링크
-- [ ] 기술 문서 내 명령/출력은 코드블록으로 정리한다.
+    - [x] 수행 항목 체크리스트(터미널/권한/Docker/Dockerfile/포트/마운트/볼륨/Git/GitHub)
+    - [x] 검증 방법(어떤 명령으로 무엇을 확인했는지) + 결과 위치/증거 링크
+- [x] 기술 문서 내 명령/출력은 코드블록으로 정리한다.
 
 **2. 터미널 조작 로그 기록**
 - 다음 작업을 터미널로 수행하고, 명령어 + 출력 결과를 기술 문서에 기록한다.
@@ -707,42 +715,42 @@ $ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
 - [x] Docker 데몬 동작 여부 확인 결과를 기록한다. (docker info 또는 동등 점검)
 
 **5. Docker 기본 운영 명령 수행**
-- [ ] 이미지: 다운로드/목록 확인 (예: docker images)
-- [ ] 컨테이너: 실행/중지/목록 확인 (예: docker ps, docker ps -a)
-- [ ] 운영: 로그 확인 (예: docker logs), 리소스 확인 (예: docker stats)
-- [ ] 수행 명령과 출력 결과를 기술 문서에 남긴다.
+- [x] 이미지: 다운로드/목록 확인 (예: docker images)
+- [x] 컨테이너: 실행/중지/목록 확인 (예: docker ps, docker ps -a)
+- [x] 운영: 로그 확인 (예: docker logs), 리소스 확인 (예: docker stats)
+- [x] 수행 명령과 출력 결과를 기술 문서에 남긴다.
 
 **6. 컨테이너 실행 실습**
-- [ ] hello-world 실행 성공을 기록한다.
-- [ ] ubuntu 컨테이너를 실행하고 내부 진입 후 간단 명령(예: ls, echo) 수행 결과를 기록한다.
-- [ ] 컨테이너 종료/유지(attach/exec 등)의 차이를 스스로 관찰하고 간단히 정리한다.
+- [x] hello-world 실행 성공을 기록한다.
+- [x] ubuntu 컨테이너를 실행하고 내부 진입 후 간단 명령(예: ls, echo) 수행 결과를 기록한다.
+- [x] 컨테이너 종료/유지(attach/exec 등)의 차이를 스스로 관찰하고 간단히 정리한다.
 
 **7. 기존 Dockerfile 기반 커스텀 이미지 제작**
 - 아래 방식 중 하나를 선택하여 기존 Dockerfile/이미지 기반의 커스텀 이미지를 만든다.
-    - [ ] (A) 웹 서버 베이스 이미지 활용(예: NGINX/Apache 등) + 정적 콘텐츠/설정만 교체
+    - [x] (A) 웹 서버 베이스 이미지 활용(예: NGINX/Apache 등) + 정적 콘텐츠/설정만 교체
     - [ ] (B) Linux 베이스 이미지(예: ubuntu/alpine 등) + 기본 기능(패키지/사용자/환경변수/헬스체크 등) 추가
 - 제작 결과는 아래 조건을 만족해야 한다.
-    - [ ] 커스텀 이미지 빌드 성공 및 컨테이너 실행 성공
+    - [x] 커스텀 이미지 빌드 성공 및 컨테이너 실행 성공
     - 기술 문서에 다음을 포함한다.
-        - [ ] 어떤 “기존 베이스(이미지/예시 Dockerfile)”를 선택했는지
-        - [ ] 내가 적용한 커스텀 포인트 각각의 목적(간단 요약)
-        - [ ] 빌드/실행 명령 + 핵심 결과(출력/스크린샷)
+        - [x] 어떤 “기존 베이스(이미지/예시 Dockerfile)”를 선택했는지
+        - [x] 내가 적용한 커스텀 포인트 각각의 목적(간단 요약)
+        - [x] 빌드/실행 명령 + 핵심 결과(출력/스크린샷)
 
 **8. 포트 매핑 및 접속 증거**
-- [ ] 브라우저 접속 화면(또는 curl 응답)을 기술 문서에 첨부한다.
+- [x] 브라우저 접속 화면(또는 curl 응답)을 기술 문서에 첨부한다.
 
 **9. Docker 볼륨 영속성 검증**
-- [ ] Docker 볼륨을 생성하고 컨테이너에 연결한다.
-- [ ] 컨테이너 삭제 전/후로 데이터를 확인하여 데이터가 유지됨을 증명한다.
-- [ ] 기술 문서에 생성/연결/검증 절차(명령+출력)를 포함한다.
+- [x] Docker 볼륨을 생성하고 컨테이너에 연결한다.
+- [x] 컨테이너 삭제 전/후로 데이터를 확인하여 데이터가 유지됨을 증명한다.
+- [x] 기술 문서에 생성/연결/검증 절차(명령+출력)를 포함한다.
 
 **10. Git 설정 및 GitHub 연동**
 - [x] Git 사용자 정보/기본 브랜치 설정을 완료하고 git config --list 결과를 기록한다.
-- [ ] GitHub 로그인 및 저장소 연동을 완료하고, 연동 증거(스크린샷 등)를 기술 문서에 첨부한다.
+- [x] GitHub 로그인 및 저장소 연동을 완료하고, 연동 증거(스크린샷 등)를 기술 문서에 첨부한다.
 
 **11. 보안 및 개인정보 보호**
-- [ ] 기술 문서/로그/스크린샷에 토큰, 비밀번호, 개인키, 인증 코드 등이 포함되지 않도록 마스킹한다.
-- [ ] 의심되는 민감정보가 노출된 경우, 즉시 히스토리/문서에서 제거하고 재발급 절차를 수행한다 (가능한 범위에서).
+- [x] 기술 문서/로그/스크린샷에 토큰, 비밀번호, 개인키, 인증 코드 등이 포함되지 않도록 마스킹한다.
+- [x] 의심되는 민감정보가 노출된 경우, 즉시 히스토리/문서에서 제거하고 재발급 절차를 수행한다 (가능한 범위에서).
 
 
 </div>
@@ -755,40 +763,40 @@ $ docker run -d -p 8080:80 --name my-web-8080 my-web:1.0
 <div>
 
 **1. 제출 저장소(GitHub Repository)**
-- [ ] 공개(또는 과제 제출 규칙에 맞는 권한)로 생성한다.
-- [ ] 저장소 링크만으로 아래 산출물 전부를 확인할 수 있어야 한다.
+- [x] 공개(또는 과제 제출 규칙에 맞는 권한)로 생성한다.
+- [x] 저장소 링크만으로 아래 산출물 전부를 확인할 수 있어야 한다.
 
 **2. 기술 문서(README.md 등)**
-- [ ] 프로젝트 개요(미션 목표 요약)
-- [ ] 실행 환경(OS/쉘/터미널, Docker 버전, Git 버전)
-- [ ] 수행 항목 체크리스트(터미널/권한/Docker/Dockerfile/포트/볼륨/Git/GitHub)
-- [ ] 검증 방법(어떤 명령으로 무엇을 확인했는지) + 결과 위치 링크
-- [ ] 트러블슈팅 2건 이상(문제 → 원인 가설 → 확인 → 해결/대안)
-- [ ] 기술 문서만 읽어도 전체 수행 내용을 파악할 수 있어야 한다.
+- [x] 프로젝트 개요(미션 목표 요약)
+- [x] 실행 환경(OS/쉘/터미널, Docker 버전, Git 버전)
+- [x] 수행 항목 체크리스트(터미널/권한/Docker/Dockerfile/포트/볼륨/Git/GitHub)
+- [x] 검증 방법(어떤 명령으로 무엇을 확인했는지) + 결과 위치 링크
+- [x] 트러블슈팅 2건 이상(문제 → 원인 가설 → 확인 → 해결/대안)
+- [x] 기술 문서만 읽어도 전체 수행 내용을 파악할 수 있어야 한다.
 
 **3. 터미널 조작 로그**
-- [ ] 터미널에서 수행한 핵심 명령과 출력 결과를 기술 문서에 기록한다.
+- [x] 터미널에서 수행한 핵심 명령과 출력 결과를 기술 문서에 기록한다.
 
 **4. Docker 운영/검증 로그**
-- [ ] docker --version, docker info 등 설치·점검 결과
-- [ ] docker images, docker ps -a, docker logs, docker stats 등 운영 명령 실행 흔적
+- [x] docker --version, docker info 등 설치·점검 결과
+- [x] docker images, docker ps -a, docker logs, docker stats 등 운영 명령 실행 흔적
 
 **5. Dockerfile 기반 웹 서버 컨테이너**
-- [ ] 웹 서버 소스코드(예: app/ 또는 src/)
-- [ ] Dockerfile
-- [ ] 빌드/실행 명령 및 결과 로그(터미널 스크린샷 가능)
-- [ ] 포트 매핑 접속 성공 증거(스크린샷 또는 로그)
+- [x] 웹 서버 소스코드(예: app/ 또는 src/)
+- [x] Dockerfile
+- [x] 빌드/실행 명령 및 결과 로그(터미널 스크린샷 가능)
+- [x] 포트 매핑 접속 성공 증거(스크린샷 또는 로그)
 
 **6. 포트 매핑 접속 증거**
-- [ ] p <host_port>:<container_port>로 실행 후, 브라우저 접속 화면(주소창 포함)을 기술 문서에 첨부한다.
+- [x] p <host_port>:<container_port>로 실행 후, 브라우저 접속 화면(주소창 포함)을 기술 문서에 첨부한다.
 
 **7. 바인드 마운트 반영 + 볼륨 영속성 증거**
-- [ ] 바인드 마운트: 실행 명령 + 호스트 변경 전/후 비교
-- [ ] Docker 볼륨: 생성/연결/검증 명령 + 컨테이너 삭제 전/후 비교
+- [x] 바인드 마운트: 실행 명령 + 호스트 변경 전/후 비교
+- [x] Docker 볼륨: 생성/연결/검증 명령 + 컨테이너 삭제 전/후 비교
 
 **8. Git 설정 및 GitHub/VSCode 연동 증거**
-- [ ] Git 사용자 정보·기본 브랜치 설정 후, VSCode에서 GitHub 로그인 및 저장소 연동 완료
-- [ ] 민감한 개인 정보(ID/PW, 토큰 등)가 포함되지 않도록 주의한다.
+- [x] Git 사용자 정보·기본 브랜치 설정 후, VSCode에서 GitHub 로그인 및 저장소 연동 완료
+- [x] 민감한 개인 정보(ID/PW, 토큰 등)가 포함되지 않도록 주의한다.
 
 </div>
 </details>
