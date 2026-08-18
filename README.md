@@ -119,7 +119,7 @@ origin	https://github.com/ottermere21/codyssey-e1-1-workstation.git (push)
 
 
 ## 4️⃣ Terminal
-### 4.1 [터미널 기본 명령어](#./CONCEPT.md#41터미널-명령어) 실습
+### 4.1 [터미널 기본 명령어](#./CONCEPT.md#41-터미널-명령어) 실습
 ```
 # 1. 현재 위치 확인
 $ pwd
