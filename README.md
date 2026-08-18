@@ -507,7 +507,7 @@ $ docker exec -it ubuntu-test bash
 ```
 
 
-### 5.4 기존 [Dockerfile](./CONCEPT.md#53-dockerfile) 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + [포트 매핑]
+### 5.4 기존 [Dockerfile](./CONCEPT.md#53-dockerfile) 기반 커스텀 이미지 제작 : 웹 서버 베이스 이미지 활용 + [포트 매핑](./CONCEPT.md#54-포트-매핑)
 ```
 $ docker build -t my-web:1.0 .
 [+] Building 1.7s (7/7) FINISHED                                                       docker:orbstack
