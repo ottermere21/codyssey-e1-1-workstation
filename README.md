@@ -16,7 +16,7 @@
 ## 1️⃣ 실행 환경
 |      |      |
 | ---- | ---- |
-| OS     | mac OS |
+| OS     | mac OS(26.5.2) |
 | Shell  | zsh    |
 | Docker(OrbStack) | 29.4.0 |
 | Git    | 2.50.1 |
@@ -141,7 +141,7 @@ Date:   Tue Aug 18 11:17:02 2026 +0900
 
 
 ## 4️⃣ Terminal
-### 4.1 [터미널 기본 명령어](#./CONCEPT.md#41-터미널-명령어) 실습
+### 4.1 [터미널 기본 명령어](./CONCEPT.md#41-터미널-명령어) 실습
 ```
 # 1. 현재 위치 확인
 $ pwd
@@ -286,7 +286,7 @@ drwxr-xr-x  2 ys  staff     64  8월  3 20:06 test
 ```
 
 
-## 5️⃣ [Docker](#./CONCEPT.md#docker-관련)
+## 5️⃣ [Docker](./CONCEPT.md#5-docker-관련)
 ### 5.1 Docker/OrbStack 설치 및 기본  점검
 ```
 $ docker --version
@@ -313,7 +313,7 @@ $ orb status
 Running
 ```
 
-### 5.2 [Docker 기본 명령어](#./CONCEPT.md#42docker명령어) 실습
+### 5.2 [Docker 기본 명령어](./CONCEPT.md#42-docker-명령어) 실습
 
 hello-world 실습 이후의 내용입니다.
 ```
@@ -588,7 +588,7 @@ my-web-8081
 ![8081](./screenshots/8081.png)
 
 
-### 5.5 [Bind Mount, Volume](./CONCEPT.md#bind-mount-volume)
+### 5.5 [Bind Mount, Volume](./CONCEPT.md#55-bind-mount-volume)
 #### ① Bind Mount
 cf. 트러블 슈팅 2번
 

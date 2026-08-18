@@ -1,9 +1,9 @@
 # 개념 정리
-1. [Git VS GitHub](#1️-git-vs-github)
-2. [절대 경로, 상대 경로](#2️-절대-경로-상대-경로)
-3. [Terminal VS Shell](#3️-terminal-vs-shell)
-4. [명령어](#4️-명령어)
-5. [Docker 관련](#5️-docker-관련)
+1. [Git VS GitHub](#1-git-vs-github)
+2. [절대 경로, 상대 경로](#2-절대-경로-상대-경로)
+3. [Terminal VS Shell](#3-terminal-vs-shell)
+4. [명령어](#4-명령어)
+5. [Docker 관련](#5-docker-관련)
 
 ----
 
