@@ -626,6 +626,17 @@ hello volume persistence
  .DS_Store 파일은 Desktop Services Store로, Finder에서 해당 폴더를 볼 때 설정 했던 보기 옵션(아이콘 위치, 크기, 보기 방식, 배경색 등)을 저장하는 파일이다. 따라서 GitHub에는 올릴 필요가 전혀 없는 파일이다.
   하지만 이미 커밋을 해서 GitHub에 올라와있는 상태이다. 
 
+**원인** <br>
+`.gitignore`에 `.DS_Store`를 추가하더라도, 이미 Git 저장소에 커밋되어 추적(Tracked)되고 있는 파일은 `.gitignore` 규칙이 적용되지 않고 계속 추적된다.
+
+**해결방법** <br>
+Git 캐시(인덱스)에서 `.DS_Store` 파일을 제거하여 추적을 중단하고 변경 사항을 커밋/푸시한다. (로컬 파일 자체는 삭제되지 않도록 `--cached` 옵션을 사용한다.)
+
+```bash
+$ git rm --cached .DS_Store
+$ git commit -m "chore: remove tracked .DS_Store"
+$ git push origin main
+```
 
 ### 2. index.html 파일 변경 후, 포트 매핑된 웹페이지 접속 시 변경 사항이 반영되지 않는 현상
 #### case ①) index.html 수정 후, 컨테이너 삭제 후 재생성 
